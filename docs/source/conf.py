@@ -21,6 +21,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'sphinx.ext.todo',
+    'sphinx.ext.autosummary',
 ]
 extensions.append('myst_parser')
 
@@ -42,6 +44,7 @@ html_static_path = ['_static']
 html_theme_options = {
     "announcement": "Welcome to the Python Course Documentation",
     "sidebar_hide_name": False,
+    "navigation_with_keys": True,
     "light_css_variables": {
         "color-brand-primary": "#2962FF",
         "color-brand-content": "#2962FF",

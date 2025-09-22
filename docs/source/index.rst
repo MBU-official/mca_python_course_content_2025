@@ -20,12 +20,48 @@ MBU MCA Python Course Content Documentation
    module2_combining_loops_conditionals
    module2_exception_handling
    module2_assignment
+   module3_strings
+   module3_data_structures
+   module3_functions
+   module3_lambda_map_filter
+   module3_assignment
 
 Welcome to the official documentation for the **MCA First-Year Python Programming** course at Mohan Babu University. This documentation is based on the course content curated by Zaid Kamil for the 2025 batch.
 
 Course Overview
 ---------------
 This documentation is designed to help MCA first-year students master the essentials of Python programming. The course provides both conceptual clarity and practical exposure, with a blend of theoretical notes, code snippets, assignments, and mini projects.
+
+Module 1
+-------------------
+
+- :doc:`Features and History of Python <module1_features_and_history_of_python>`
+- :doc:`Installation & IDEs <module1_installation_and_ides>`
+- :doc:`Interpreter vs Compiler <module1_interpreter_vs_compiler>`
+- :doc:`Input/Output and Data Types <module1_input_output_and_data_types>`
+- :doc:`Operators, Expressions, and Comments <module1_operators_expressions_comments>`
+- :doc:`Assignment Questions <module1_assignment>`
+
+Module 2 
+-------------------
+
+- :doc:`Decision Making <module2_decision_making>`
+- :doc:`Looping <module2_looping>`
+- :doc:`Functions: enumerate() and zip() <module2_functions_enumerate_zip>`
+- :doc:`else with Loops <module2_else_with_loops>`
+- :doc:`List and Dictionary Comprehensions <module2_comprehensions>`
+- :doc:`Combining Loops with Conditionals <module2_combining_loops_conditionals>`
+- :doc:`Exception Handling <module2_exception_handling>`
+- :doc:`Assignment Questions <module2_assignment>`
+
+Module 3 
+-------------------
+
+- :doc:`Strings <module3_strings>`
+- :doc:`Data Structures <module3_data_structures>`
+- :doc:`Functions <module3_functions>`
+- :doc:`Lambda Functions, map(), and filter() <module3_lambda_map_filter>`
+- :doc:`Assignment Questions <module3_assignment>`
 
 Course Structure
 ----------------
@@ -66,6 +102,7 @@ Course Structure
 - Recursion (examples: factorial, Fibonacci)
 - Function integration with strings & collections
 - Lambda functions, ``map()``, ``filter()``
+- Module 3 Assignment 
 
 **Module 4: Object-Oriented Programming in Python (7 Periods)**
 
@@ -115,27 +152,7 @@ License
 This documentation is for educational purposes at Mohan Babu University. Please contact the maintainer for reuse or distribution outside the university.
 
 
-Module 1 Navigation
--------------------
 
-- :doc:`Features and History of Python <module1_features_and_history_of_python>`
-- :doc:`Installation & IDEs <module1_installation_and_ides>`
-- :doc:`Interpreter vs Compiler <module1_interpreter_vs_compiler>`
-- :doc:`Input/Output and Data Types <module1_input_output_and_data_types>`
-- :doc:`Operators, Expressions, and Comments <module1_operators_expressions_comments>`
-- :doc:`Assignment Questions <module1_assignment>`
-
-Module 2 Navigation
--------------------
-
-- :doc:`Decision Making <module2_decision_making>`
-- :doc:`Looping <module2_looping>`
-- :doc:`Functions: enumerate() and zip() <module2_functions_enumerate_zip>`
-- :doc:`else with Loops <module2_else_with_loops>`
-- :doc:`List and Dictionary Comprehensions <module2_comprehensions>`
-- :doc:`Combining Loops with Conditionals <module2_combining_loops_conditionals>`
-- :doc:`Exception Handling <module2_exception_handling>`
-- :doc:`Assignment Questions <module2_assignment>`
 
 
 *Curated by Zaid Kamil for Mohan Babu University, 2025.*
