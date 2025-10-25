@@ -1,4 +1,4 @@
-MBU MCA Python Course Content Documentation
+MBU Python Course Content
 ==========================================
 
 
@@ -26,11 +26,11 @@ MBU MCA Python Course Content Documentation
    module3_lambda_map_filter
    module3_assignment
 
-Welcome to the official documentation for the **MCA First-Year Python Programming** course at Mohan Babu University. This documentation is based on the course content curated by Zaid Kamil for the 2025 batch.
+Welcome to the official documentation for the **Python Programming** course at Mohan Babu University. This documentation is based on the course content curated by Zaid Kamil.
 
 Course Overview
 ---------------
-This documentation is designed to help MCA first-year students master the essentials of Python programming. The course provides both conceptual clarity and practical exposure, with a blend of theoretical notes, code snippets, assignments, and mini projects.
+This documentation is designed to help students master the essentials of Python programming. The course provides both conceptual clarity and practical exposure, with a blend of theoretical notes, code snippets, assignments, and mini projects.
 
 Module 1
 -------------------
