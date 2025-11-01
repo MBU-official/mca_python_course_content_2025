@@ -25,6 +25,12 @@ MBU Python Course Content
    module3_functions
    module3_lambda_map_filter
    module3_assignment
+   module4_classes_and_objects
+   module4_constructors_destructors
+   module4_encapsulation
+   module4_inheritance
+   module4_polymorphism_abstraction
+   module4_assignment
 
 Welcome to the official documentation for the **Python Programming** course at Mohan Babu University. This documentation is based on the course content curated by Zaid Kamil.
 
@@ -62,6 +68,16 @@ Module 3
 - :doc:`Functions <module3_functions>`
 - :doc:`Lambda Functions, map(), and filter() <module3_lambda_map_filter>`
 - :doc:`Assignment Questions <module3_assignment>`
+
+Module 4
+-------------------
+
+- :doc:`Classes and Objects <module4_classes_and_objects>`
+- :doc:`Constructors and Destructors <module4_constructors_destructors>`
+- :doc:`Encapsulation <module4_encapsulation>`
+- :doc:`Inheritance <module4_inheritance>`
+- :doc:`Polymorphism and Abstraction <module4_polymorphism_abstraction>`
+- :doc:`Assignment Questions <module4_assignment>`
 
 Course Structure
 ----------------
@@ -104,17 +120,21 @@ Course Structure
 - Lambda functions, ``map()``, ``filter()``
 - Module 3 Assignment 
 
-**Module 4: Object-Oriented Programming in Python (7 Periods)**
+**Module 4: Object-Oriented Programming in Python (8 Periods)**
 
 - Classes and objects
-- Instance variables and methods
-- Constructors (``__init__``) & destructors
-- Encapsulation (public, protected, private)
-- Inheritance (types, method overriding)
-- Polymorphism
-- Abstraction (using ``abc`` module)
+- Defining classes, instance variables and methods
+- Constructors (``__init__``) and destructors (``__del__``)
+- Encapsulation with access conventions: public, protected, private
+- Using ``@property`` decorator for getters and setters
+- Inheritance and its types: single, multiple, multilevel, hierarchical
+- Method overriding with ``super()``
+- Polymorphism: method overriding, operator overloading, duck typing
+- Abstraction using abstract classes (``abc`` module)
+- ``@abstractmethod`` decorator
+- Real-world OOP applications and design patterns
 
-**Module 5: Data Visualization & Web Development (14 Periods)**
+**Module 5: Data Visualization & Web Development (12 Periods)**
 
 - Importance & purpose of data visualization
 - NumPy, Pandas, Matplotlib: line graphs, bar charts, histograms, scatter plots
