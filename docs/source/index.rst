@@ -31,6 +31,12 @@ MBU Python Course Content
    module4_inheritance
    module4_polymorphism_abstraction
    module4_assignment
+   module5_numpy_basics
+   module5_pandas_dataframes
+   module5_matplotlib_visualization
+   module5_flask_basics
+   module5_flask_forms_crud
+   module5_assignment
 
 Welcome to the official documentation for the **Python Programming** course at Mohan Babu University. This documentation is based on the course content curated by Zaid Kamil.
 
@@ -78,6 +84,16 @@ Module 4
 - :doc:`Inheritance <module4_inheritance>`
 - :doc:`Polymorphism and Abstraction <module4_polymorphism_abstraction>`
 - :doc:`Assignment Questions <module4_assignment>`
+
+Module 5
+-------------------
+
+- :doc:`NumPy Basics <module5_numpy_basics>`
+- :doc:`Pandas DataFrames <module5_pandas_dataframes>`
+- :doc:`Matplotlib Visualization <module5_matplotlib_visualization>`
+- :doc:`Flask Basics <module5_flask_basics>`
+- :doc:`Flask Forms & CRUD <module5_flask_forms_crud>`
+- :doc:`Assignment Questions <module5_assignment>`
 
 Course Structure
 ----------------
