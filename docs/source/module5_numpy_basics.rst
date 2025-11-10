@@ -380,7 +380,7 @@ Complete Example: Semester Performance Tracker
        9, 8, 7, 6, 5, 4, 3, 4, 5, 3, 2, 3, 4, 5, 6, 4, 3, 2
    ])
 
-   print("=== MCA Student Motivation Analysis ===")
+   print("=== University Student Motivation Analysis ===")
    print(f"Weeks tracked: {len(motivation)}")
    print(f"Mean motivation: {np.mean(motivation):.2f}")
    print(f"Median motivation: {np.median(motivation):.2f}")

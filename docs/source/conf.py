@@ -9,7 +9,7 @@
 import os
 import sys
 
-project = 'Python Course Content'
+project = 'MBU Python Course Content'
 copyright = '2025, Zaid Kamil'
 author = 'Zaid Kamil'
 release = '1.0'
@@ -42,7 +42,7 @@ html_static_path = ['_static']
 
 # Theme options
 html_theme_options = {
-    "announcement": "Welcome to the Python Course Documentation",
+    "announcement": "Welcome to the MBU Python Course Documentation",
     "sidebar_hide_name": False,
     "navigation_with_keys": True,
     "light_css_variables": {

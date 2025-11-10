@@ -458,7 +458,7 @@ Class methods are marked with ``@classmethod`` decorator. They:
    print(Student.get_school_info())
 
    print("\n=== Creating Students ===")
-   student1 = Student("Alice", "MCA001")
+   student1 = Student("Alice", "CS001")
    student1.add_grade("Python", 85)
    student1.add_grade("Java", 78)
    student1.add_grade("WebDev", 92)
@@ -618,7 +618,7 @@ Python allows you to add, modify, and delete attributes of objects at runtime. T
            return getattr(self, attr_name, default)
 
    # Demonstrate dynamic attributes
-   student = FlexibleStudent("Alice", "MCA001")
+   student = FlexibleStudent("Alice", "CS001")
    student.list_all_attributes()
 
    # Add various attributes dynamically

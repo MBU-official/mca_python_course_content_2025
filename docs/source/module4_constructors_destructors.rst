@@ -205,9 +205,9 @@ Unlike languages like Java or C++, Python doesn't support traditional method ove
            return f"Student: {self.name}, Roll: {self.roll_no}, Grade: {self.grade}"
 
    # Using different "constructors"
-   student1 = Student("Alice", "MCA001", 85.5)  # Regular constructor
-   student2 = Student.from_string("Bob, MCA002, 78.0")  # From string
-   student3 = Student.from_dict({'name': 'Charlie', 'roll_no': 'MCA003', 'grade': 92.0})  # From dict
+   student1 = Student("Alice", "CS001", 85.5)  # Regular constructor
+   student2 = Student.from_string("Bob, CS002, 78.0")  # From string
+   student3 = Student.from_dict({'name': 'Charlie', 'roll_no': 'CS003', 'grade': 92.0})  # From dict
    student4 = Student.default_student("Diana")  # Default student
 
    for student in [student1, student2, student3, student4]:
@@ -362,11 +362,11 @@ Complete Example: Student Management
            print(f"Student {self.name} record deleted")
 
    # Creating students
-   s1 = Student("Alice", "MCA001", "Computer Science")
+   s1 = Student("Alice", "CS001", "Computer Science")
    s1.add_marks("Python", 85)
    s1.add_marks("Data Structures", 90)
 
-   s2 = Student("Bob", "MCA002", "Computer Science")
+   s2 = Student("Bob", "CS002", "Computer Science")
    s2.add_marks("Python", 78)
    s2.add_marks("Data Structures", 82)
 

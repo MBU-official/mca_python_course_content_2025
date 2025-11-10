@@ -331,7 +331,7 @@ Real-World Example: Student Grade System
            print(f"{'='*40}")
 
    # Using the Student class
-   student = Student("Alice Johnson", "MCA001")
+   student = Student("Alice Johnson", "CS001")
 
    student.add_marks("Python Programming", 85)
    student.add_marks("Data Structures", 90)
@@ -340,7 +340,7 @@ Real-World Example: Student Grade System
 
    # Cannot modify marks directly (encapsulated)
    print(student.name)         # Alice Johnson
-   print(student.roll_number)  # MCA001
+   print(student.roll_number)  # CS001
    print(f"Average: {student.average:.2f}")  # Average: 86.25
    print(f"Grade: {student.grade}")          # Grade: B
 

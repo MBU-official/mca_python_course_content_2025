@@ -7,7 +7,7 @@ Introduction
 ------------
 
 This module covers the history and key features of the Python
-programming language. It is designed for MCA-level students to provide a
+programming language. It is designed for university-level students to provide a
 strong foundation for further study and practical application.
 
 --------------

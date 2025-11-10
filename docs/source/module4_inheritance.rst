@@ -124,8 +124,8 @@ When a child class has its own constructor, use ``super()`` to call the parent's
        def display(self):
            return f"{super().display()}, Roll No: {self.roll_number}"
 
-   student = Student("Alice", 20, "MCA001")
-   print(student.display())  # Name: Alice, Age: 20, Roll No: MCA001
+   student = Student("Alice", 20, "CS001")
+   print(student.display())  # Name: Alice, Age: 20, Roll No: CS001
 
 .. note::
    ``super()`` is used to access methods from the parent class. It's essential when overriding methods or constructors.

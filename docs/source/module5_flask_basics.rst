@@ -126,8 +126,10 @@ Dynamic Routes (URL Parameters)
 
 --------------
 
-Returning HTML
---------------
+Returning HTML (The Wrong Way vs The Right Way)
+---------------------------------------------
+
+**❌ The Wrong Way (Messy!):**
 
 .. code-block:: python
 
@@ -164,6 +166,67 @@ Returning HTML
 
    if __name__ == '__main__':
        app.run(debug=True)
+
+**✅ The Right Way (Clean & Professional!):**
+
+**Project Structure:**
+
+.. code-block:: text
+
+   my_flask_app/
+   ├── app.py
+   ├── static/
+   │   └── style.css
+   └── templates/
+       └── welcome.html
+
+**app.py:**
+
+.. code-block:: python
+
+   from flask import Flask, render_template
+
+   app = Flask(__name__)
+
+   @app.route('/')
+   def home():
+       return render_template('welcome.html', 
+                            title='My Flask App 🎨',
+                            message='This is way cooler than plain text! ✨')
+
+   if __name__ == '__main__':
+       app.run(debug=True)
+
+**templates/welcome.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>{{ title }}</title>
+       <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+   </head>
+   <body>
+       <div class="emoji">🚀</div>
+       <h1>Welcome to Flask!</h1>
+       <p>{{ message }}</p>
+   </body>
+   </html>
+
+**static/style.css:**
+
+.. code-block:: css
+
+   body { 
+       font-family: Arial; 
+       text-align: center; 
+       padding: 50px;
+       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       color: white;
+   }
+   h1 { font-size: 48px; }
+   .emoji { font-size: 64px; }
 
 .. note::
    **Wait! 🛑** This is getting messy! Mixing HTML in Python strings becomes unreadable fast. There's a better way... **Templates!** 🎨✨
@@ -561,9 +624,21 @@ Real-World Example: College Survival Guide (Using Templates!)
 HTTP Methods (GET vs POST)
 ---------------------------
 
+**Project Structure:**
+
+.. code-block:: text
+
+   http_methods_demo/
+   ├── app.py
+   └── templates/
+       ├── search_form.html
+       └── submit_form.html
+
+**app.py:**
+
 .. code-block:: python
 
-   from flask import Flask, request
+   from flask import Flask, request, render_template
 
    app = Flask(__name__)
 
@@ -571,86 +646,262 @@ HTTP Methods (GET vs POST)
    def search():
        # GET parameters from URL: /search?q=python
        query = request.args.get('q', 'nothing')
-       return f"🔍 You searched for: {query}"
+       return render_template('search_form.html', query=query)
 
    @app.route('/submit', methods=['GET', 'POST'])
    def submit():
        if request.method == 'POST':
            # POST data from form
            name = request.form.get('name')
-           return f"✅ Form submitted! Hello, {name}!"
+           return render_template('submit_form.html', 
+                               success=True, 
+                               name=name)
        else:
            # Show form
-           return '''
-           <form method="POST">
-               <input type="text" name="name" placeholder="Your name" required>
-               <button type="submit">Submit 🚀</button>
-           </form>
-           '''
+           return render_template('submit_form.html', success=False)
 
    if __name__ == '__main__':
        app.run(debug=True)
+
+**templates/search_form.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>Search Results 🔍</title>
+       <style>
+           body { font-family: Arial; padding: 50px; text-align: center; }
+           .result { font-size: 24px; margin: 20px 0; }
+       </style>
+   </head>
+   <body>
+       <h1>Search Results 🔍</h1>
+       <div class="result">You searched for: <strong>{{ query }}</strong></div>
+       <p>Try: <a href="/search?q=python">Search for Python</a></p>
+   </body>
+   </html>
+
+**templates/submit_form.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>{% if success %}Thank You!{% else %}Contact Form{% endif %} 📝</title>
+       <style>
+           body { 
+               font-family: Arial; 
+               padding: 50px; 
+               text-align: center;
+               background: #f5f5f5;
+           }
+           .form-container {
+               max-width: 400px;
+               margin: 0 auto;
+               padding: 30px;
+               background: white;
+               border-radius: 10px;
+               box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+           }
+           input, button {
+               width: 100%;
+               padding: 10px;
+               margin: 10px 0;
+               border: 1px solid #ddd;
+               border-radius: 5px;
+           }
+           button {
+               background: #007bff;
+               color: white;
+               border: none;
+               cursor: pointer;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="form-container">
+           {% if success %}
+               <h1>✅ Form Submitted!</h1>
+               <p>Hello, <strong>{{ name }}</strong>!</p>
+               <p>Thank you for submitting the form! 🎉</p>
+               <a href="/submit">Submit Another</a>
+           {% else %}
+               <h1>📝 Contact Form</h1>
+               <form method="POST">
+                   <input type="text" name="name" placeholder="Your name" required>
+                   <button type="submit">Submit 🚀</button>
+               </form>
+           {% endif %}
+       </div>
+   </body>
+   </html>
 
 --------------
 
 Error Handling
 --------------
 
+**Project Structure:**
+
+.. code-block:: text
+
+   error_handling_demo/
+   ├── app.py
+   └── templates/
+       ├── 404.html
+       └── help.html
+
+**app.py:**
+
 .. code-block:: python
 
-   from flask import Flask
+   from flask import Flask, render_template
 
    app = Flask(__name__)
 
    @app.route('/')
    def home():
-       return "Home Page 🏠"
+       return render_template('home.html')
 
    @app.errorhandler(404)
    def page_not_found(error):
-       return '''
-       <html>
-       <head>
-           <title>404 - Lost? 🗺️</title>
-           <style>
-               body {
-                   font-family: Arial;
-                   text-align: center;
-                   padding: 100px;
-                   background: #f0f0f0;
-               }
-               .emoji { font-size: 100px; }
-               h1 { color: #e74c3c; }
-           </style>
-       </head>
-       <body>
-           <div class="emoji">🤷‍♂️</div>
-           <h1>404 - Page Not Found!</h1>
-           <p>Looks like you're lost in the internet... 🌐</p>
-           <a href="/">Go Home 🏠</a>
-       </body>
-       </html>
-       ''', 404
+       return render_template('404.html'), 404
 
    @app.route('/help/<problem>')
    def help_route(problem):
        if problem == 'impossible':
-           return '''
-           <html>
-           <body style="text-align: center; padding: 50px; font-family: Arial;">
-               <h1>🌟 Nothing is Impossible! 🌟</h1>
-               <p style="font-size: 20px;">
-                   Remember: Even experienced developers Google stuff daily! 💪<br>
-                   Take it step by step. You've got this! 🚀
-               </p>
-               <a href="/">← Back to Home</a>
-           </body>
-           </html>
-           ''', 404
-       return f"Help for: {problem}"
+           return render_template('help.html', 
+                               problem=problem,
+                               is_impossible=True), 200
+       return render_template('help.html', 
+                           problem=problem,
+                           is_impossible=False)
 
    if __name__ == '__main__':
        app.run(debug=True)
+
+**templates/404.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>404 - Lost? 🗺️</title>
+       <style>
+           body {
+               font-family: Arial;
+               text-align: center;
+               padding: 100px;
+               background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+               color: white;
+               min-height: 100vh;
+               margin: 0;
+           }
+           .emoji { font-size: 100px; margin: 20px 0; }
+           h1 { color: white; font-size: 48px; }
+           a {
+               color: white;
+               background: rgba(255,255,255,0.2);
+               padding: 15px 25px;
+               border-radius: 8px;
+               text-decoration: none;
+               display: inline-block;
+               margin-top: 20px;
+           }
+           a:hover { background: rgba(255,255,255,0.3); }
+       </style>
+   </head>
+   <body>
+       <div class="emoji">🤷‍♂️</div>
+       <h1>404 - Page Not Found!</h1>
+       <p style="font-size: 20px;">Looks like you're lost in the internet... 🌐</p>
+       <a href="{{ url_for('home') }}">Go Home 🏠</a>
+   </body>
+   </html>
+
+**templates/help.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>{% if is_impossible %}Nothing is Impossible!{% else %}Help{% endif %} 💡</title>
+       <style>
+           body {
+               font-family: Arial;
+               text-align: center;
+               padding: 50px;
+               background: {% if is_impossible %}linear-gradient(135deg, #667eea, #764ba2){% else %}#f8f9fa{% endif %};
+               color: {% if is_impossible %}white{% else %}#333{% endif %};
+               min-height: 100vh;
+               margin: 0;
+           }
+           .container {
+               max-width: 600px;
+               margin: 0 auto;
+               padding: 40px;
+               background: {% if is_impossible %}rgba(255,255,255,0.1){% else %}white{% endif %};
+               border-radius: 15px;
+               box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+           }
+           .emoji { font-size: 64px; margin: 20px 0; }
+           a {
+               color: {% if is_impossible %}white{% else %}#007bff{% endif %};
+               background: {% if is_impossible %}rgba(255,255,255,0.2){% else %}#007bff{% endif %};
+               padding: 15px 25px;
+               border-radius: 8px;
+               text-decoration: none;
+               display: inline-block;
+               margin-top: 20px;
+               {% if not is_impossible %}color: white;{% endif %}
+           }
+       </style>
+   </head>
+   <body>
+       <div class="container">
+           {% if is_impossible %}
+               <div class="emoji">🌟</div>
+               <h1>Nothing is Impossible! 🌟</h1>
+               <p style="font-size: 20px; line-height: 1.6;">
+                   Remember: Even experienced developers Google stuff daily! 💪<br>
+                   Take it step by step. You've got this! 🚀
+               </p>
+           {% else %}
+               <div class="emoji">💡</div>
+               <h1>Help Section</h1>
+               <p style="font-size: 18px;">Getting help for: <strong>{{ problem }}</strong></p>
+               <p>We're here to help you solve your problems! 🤝</p>
+           {% endif %}
+           <a href="{{ url_for('home') }}">← Back to Home</a>
+       </div>
+   </body>
+   </html>
+
+**templates/home.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>Home Page 🏠</title>
+       <style>
+           body { font-family: Arial; text-align: center; padding: 50px; }
+           h1 { color: #007bff; }
+       </style>
+   </head>
+   <body>
+       <h1>🏠 Home Page</h1>
+       <p>Welcome to our Flask app!</p>
+       <p>Try visiting <a href="/nonexistent">/nonexistent</a> to see 404 page</p>
+       <p>Or get help: <a href="/help/impossible">/help/impossible</a></p>
+   </body>
+   </html>
 
 --------------
 
@@ -695,7 +946,23 @@ Working with Dates and Times in Flask
 
 Flask applications often need to work with dates and times - for timestamps, scheduling, age calculations, and displaying current information.
 
-**Basic DateTime Display**
+**Project Structure:**
+
+.. code-block:: text
+
+   datetime_demo/
+   ├── app.py
+   ├── static/
+   │   └── datetime_style.css
+   └── templates/
+       ├── base.html
+       ├── current_time.html
+       ├── user_greeting.html
+       ├── age_calculator.html
+       ├── progress_tracker.html
+       └── time_formats.html
+
+**app.py (Clean Python with Templates):**
 
 .. code-block:: python
 
@@ -708,115 +975,90 @@ Flask applications often need to work with dates and times - for timestamps, sch
    @app.route('/')
    def home():
        current_time = datetime.now()
-       return f"""
-       <h1>🕒 Current Server Time</h1>
-       <p><strong>Date:</strong> {current_time.strftime('%A, %B %d, %Y')}</p>
-       <p><strong>Time:</strong> {current_time.strftime('%I:%M:%S %p')}</p>
-       <p><strong>Timezone:</strong> Server Local Time</p>
-       <p><strong>Unix Timestamp:</strong> {int(current_time.timestamp())}</p>
-       """
+       return render_template('current_time.html', current_time=current_time)
 
    @app.route('/time/<username>')
    def user_time(username):
        current_time = datetime.now()
-       greeting = "Good Morning" if current_time.hour < 12 else \
-                 "Good Afternoon" if current_time.hour < 17 else "Good Evening"
        
-       return f"""
-       <h1>🌟 {greeting}, {username}!</h1>
-       <p>Current time: {current_time.strftime('%I:%M %p')}</p>
-       <p>Today is {current_time.strftime('%A')}</p>
-       <p>Have a wonderful {current_time.strftime('%B')}! ✨</p>
-       """
-
-**Advanced DateTime Operations**
-
-.. code-block:: python
-
-   from flask import Flask
-   from datetime import datetime, timedelta
-   import calendar
-
-   app = Flask(__name__)
+       if current_time.hour < 12:
+           greeting = "Good Morning"
+           emoji = "🌅"
+       elif current_time.hour < 17:
+           greeting = "Good Afternoon" 
+           emoji = "☀️"
+       else:
+           greeting = "Good Evening"
+           emoji = "🌆"
+       
+       return render_template('user_greeting.html',
+                            username=username,
+                            current_time=current_time,
+                            greeting=greeting,
+                            emoji=emoji)
 
    @app.route('/age/<int:birth_year>')
    def calculate_age(birth_year):
        current_year = datetime.now().year
        age = current_year - birth_year
        
-       # Calculate days until next birthday
        today = datetime.now()
-       next_birthday = datetime(current_year + 1, 1, 1)  # Simplified
+       next_birthday = datetime(current_year + 1, 1, 1)
        days_to_birthday = (next_birthday - today).days
        
-       return f"""
-       <h1>🎂 Age Calculator</h1>
-       <p><strong>Your age:</strong> {age} years old</p>
-       <p><strong>Days until New Year:</strong> {days_to_birthday} days</p>
-       <p><strong>You were born in:</strong> {birth_year}</p>
-       <p><strong>Fun fact:</strong> You've lived through {age} years! 🎉</p>
-       """
+       return render_template('age_calculator.html',
+                            birth_year=birth_year,
+                            age=age,
+                            days_to_birthday=days_to_birthday)
 
    @app.route('/semester-progress')
    def semester_progress():
-       # Semester dates (example)
-       semester_start = datetime(2024, 8, 1)  # August 1st
-       semester_end = datetime(2024, 12, 15)   # December 15th
+       semester_start = datetime(2024, 8, 1)
+       semester_end = datetime(2024, 12, 15)
        current_date = datetime.now()
        
        total_days = (semester_end - semester_start).days
        elapsed_days = (current_date - semester_start).days
        remaining_days = (semester_end - current_date).days
-       
        progress_percent = (elapsed_days / total_days) * 100 if elapsed_days > 0 else 0
        
-       return f"""
-       <h1>📚 Semester Progress Tracker</h1>
-       <p><strong>Semester Duration:</strong> {total_days} days</p>
-       <p><strong>Days Completed:</strong> {elapsed_days} days</p>
-       <p><strong>Days Remaining:</strong> {remaining_days} days</p>
-       <p><strong>Progress:</strong> {progress_percent:.1f}%</p>
-       <div style="background: #ddd; width: 300px; border-radius: 10px;">
-           <div style="background: linear-gradient(90deg, #4CAF50, #8BC34A); 
-                       width: {progress_percent}%; height: 20px; border-radius: 10px;"></div>
-       </div>
-       <p>{'🎉 Almost there!' if progress_percent > 80 else '💪 Keep going!' if progress_percent > 50 else '🚀 Just getting started!'}</p>
-       """
-
-**Time-Based Greetings and Content**
-
-.. code-block:: python
-
-   from flask import Flask
-   from datetime import datetime
-
-   app = Flask(__name__)
+       # Determine motivation message
+       if progress_percent > 80:
+           motivation = "🎉 Almost there!"
+       elif progress_percent > 50:
+           motivation = "💪 Keep going!"
+       else:
+           motivation = "🚀 Just getting started!"
+       
+       return render_template('progress_tracker.html',
+                            total_days=total_days,
+                            elapsed_days=elapsed_days,
+                            remaining_days=remaining_days,
+                            progress_percent=progress_percent,
+                            motivation=motivation)
 
    @app.route('/dashboard/<username>')
    def dashboard(username):
        now = datetime.now()
-       hour = now.hour
-       day_name = now.strftime('%A')
        
-       # Time-based greeting
-       if hour < 6:
+       # Time-based greeting and advice
+       if now.hour < 6:
            greeting = "🌙 Burning the midnight oil"
            advice = "Maybe it's time for some sleep?"
-       elif hour < 12:
+       elif now.hour < 12:
            greeting = "🌅 Good morning"
            advice = "Start your day with something productive!"
-       elif hour < 17:
+       elif now.hour < 17:
            greeting = "☀️ Good afternoon"
            advice = "Hope your day is going well!"
-       elif hour < 20:
+       elif now.hour < 20:
            greeting = "🌆 Good evening"
            advice = "Time to wind down and relax!"
        else:
            greeting = "🌃 Good night"
            advice = "Perfect time for some evening learning!"
        
-       # Day-based content
-       day_motivation = {
+       day_motivations = {
            'Monday': '💪 Fresh start to a new week!',
            'Tuesday': '🚀 Tuesday momentum building!',
            'Wednesday': '🐪 Hump day - halfway there!',
@@ -826,54 +1068,23 @@ Flask applications often need to work with dates and times - for timestamps, sch
            'Sunday': '🧘 Sunday self-care day!'
        }
        
-       return f"""
-       <!DOCTYPE html>
-       <html>
-       <head>
-           <title>Dashboard - {username}</title>
-           <style>
-               body {{
-                   font-family: Arial, sans-serif;
-                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                   color: white;
-                   text-align: center;
-                   padding: 50px;
-               }}
-               .dashboard {{
-                   background: rgba(255,255,255,0.1);
-                   padding: 40px;
-                   border-radius: 20px;
-                   backdrop-filter: blur(10px);
-               }}
-           </style>
-       </head>
-       <body>
-           <div class="dashboard">
-               <h1>{greeting}, {username}!</h1>
-               <h2>📅 It's {day_name}, {now.strftime('%B %d, %Y')}</h2>
-               <h3>⏰ Current time: {now.strftime('%I:%M %p')}</h3>
-               <p><strong>💡 {advice}</strong></p>
-               <p><strong>✨ {day_motivation.get(day_name, 'Have a great day!')}</strong></p>
-               
-               <div style="margin-top: 30px;">
-                   <h3>📊 Quick Stats</h3>
-                   <p>Week of the year: {now.isocalendar()[1]}</p>
-                   <p>Day of the year: {now.timetuple().tm_yday}</p>
-                   <p>Days until weekend: {(5 - now.weekday()) if now.weekday() < 5 else 0}</p>
-               </div>
-           </div>
-       </body>
-       </html>
-       """
-
-**DateTime Formatting and Utilities**
-
-.. code-block:: python
-
-   from flask import Flask, render_template_string
-   from datetime import datetime, timedelta
-
-   app = Flask(__name__)
+       day_name = now.strftime('%A')
+       day_motivation = day_motivations.get(day_name, 'Have a great day!')
+       
+       stats = {
+           'week_of_year': now.isocalendar()[1],
+           'day_of_year': now.timetuple().tm_yday,
+           'days_until_weekend': (5 - now.weekday()) if now.weekday() < 5 else 0
+       }
+       
+       return render_template('dashboard.html',
+                            username=username,
+                            now=now,
+                            greeting=greeting,
+                            advice=advice,
+                            day_name=day_name,
+                            day_motivation=day_motivation,
+                            stats=stats)
 
    @app.route('/time-formats')
    def time_formats():
@@ -892,45 +1103,11 @@ Flask applications often need to work with dates and times - for timestamps, sch
            'Unix Timestamp': str(int(now.timestamp()))
        }
        
-       html = """
-       <!DOCTYPE html>
-       <html>
-       <head>
-           <title>🕒 DateTime Formats</title>
-           <style>
-               body { font-family: Arial; padding: 50px; background: #f0f2f5; }
-               .format-card {
-                   background: white;
-                   padding: 15px;
-                   margin: 10px 0;
-                   border-radius: 8px;
-                   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                   display: flex;
-                   justify-content: space-between;
-               }
-               .format-name { font-weight: bold; color: #333; }
-               .format-value { color: #666; font-family: monospace; }
-           </style>
-       </head>
-       <body>
-           <h1>🕒 DateTime Format Examples</h1>
-           <p>Current server time displayed in various formats:</p>
-           {% for name, value in formats.items() %}
-               <div class="format-card">
-                   <span class="format-name">{{ name }}:</span>
-                   <span class="format-value">{{ value }}</span>
-               </div>
-           {% endfor %}
-       </body>
-       </html>
-       """
-       
-       return render_template_string(html, formats=formats)
+       return render_template('time_formats.html', formats=formats)
 
    @app.route('/countdown/<target_date>')
    def countdown(target_date):
        try:
-           # Parse target date (format: YYYY-MM-DD)
            target = datetime.strptime(target_date, '%Y-%m-%d')
            current = datetime.now()
            
@@ -940,28 +1117,205 @@ Flask applications often need to work with dates and times - for timestamps, sch
                hours = delta.seconds // 3600
                minutes = (delta.seconds % 3600) // 60
                
-               return f"""
-               <h1>⏰ Countdown Timer</h1>
-               <h2>Time until {target.strftime('%B %d, %Y')}:</h2>
-               <div style="font-size: 24px; color: #007bff;">
-                   <strong>{days} days, {hours} hours, {minutes} minutes</strong>
-               </div>
-               <p>{'🎓 Exam season approaching!' if 'exam' in target_date else '📅 Event approaching!'}</p>
-               """
+               is_exam = 'exam' in target_date
+               
+               return render_template('countdown.html',
+                                    target=target,
+                                    days=days,
+                                    hours=hours,
+                                    minutes=minutes,
+                                    is_past=False,
+                                    is_exam=is_exam)
            else:
-               return f"""
-               <h1>⏰ Countdown Timer</h1>
-               <h2>The date {target.strftime('%B %d, %Y')} has already passed!</h2>
-               <p>🚀 Time to set a new goal!</p>
-               """
+               return render_template('countdown.html',
+                                    target=target,
+                                    is_past=True)
        except ValueError:
-           return """
-           <h1>❌ Invalid Date Format</h1>
-           <p>Please use format: YYYY-MM-DD (e.g., 2024-12-25)</p>
-           """
+           return render_template('countdown.html', invalid_date=True)
 
    if __name__ == '__main__':
        app.run(debug=True)
+
+**templates/base.html:**
+
+.. code-block:: html
+
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>{% block title %}DateTime Demo{% endblock %} 🕒</title>
+       <link rel="stylesheet" href="{{ url_for('static', filename='datetime_style.css') }}">
+   </head>
+   <body>
+       <div class="container">
+           {% block content %}{% endblock %}
+       </div>
+   </body>
+   </html>
+
+**templates/current_time.html:**
+
+.. code-block:: html
+
+   {% extends "base.html" %}
+
+   {% block title %}Current Time{% endblock %}
+
+   {% block content %}
+       <h1>🕒 Current Server Time</h1>
+       <div class="time-card">
+           <p><strong>Date:</strong> {{ current_time.strftime('%A, %B %d, %Y') }}</p>
+           <p><strong>Time:</strong> {{ current_time.strftime('%I:%M:%S %p') }}</p>
+           <p><strong>Timezone:</strong> Server Local Time</p>
+           <p><strong>Unix Timestamp:</strong> {{ current_time.timestamp()|int }}</p>
+       </div>
+   {% endblock %}
+
+**templates/user_greeting.html:**
+
+.. code-block:: html
+
+   {% extends "base.html" %}
+
+   {% block title %}Greeting for {{ username }}{% endblock %}
+
+   {% block content %}
+       <h1>{{ emoji }} {{ greeting }}, {{ username }}!</h1>
+       <div class="greeting-card">
+           <p>Current time: {{ current_time.strftime('%I:%M %p') }}</p>
+           <p>Today is {{ current_time.strftime('%A') }}</p>
+           <p>Have a wonderful {{ current_time.strftime('%B') }}! ✨</p>
+       </div>
+   {% endblock %}
+
+**templates/age_calculator.html:**
+
+.. code-block:: html
+
+   {% extends "base.html" %}
+
+   {% block title %}Age Calculator{% endblock %}
+
+   {% block content %}
+       <h1>🎂 Age Calculator</h1>
+       <div class="age-card">
+           <p><strong>Your age:</strong> {{ age }} years old</p>
+           <p><strong>Days until New Year:</strong> {{ days_to_birthday }} days</p>
+           <p><strong>You were born in:</strong> {{ birth_year }}</p>
+           <p><strong>Fun fact:</strong> You've lived through {{ age }} years! 🎉</p>
+       </div>
+   {% endblock %}
+
+**templates/progress_tracker.html:**
+
+.. code-block:: html
+
+   {% extends "base.html" %}
+
+   {% block title %}Semester Progress{% endblock %}
+
+   {% block content %}
+       <h1>📚 Semester Progress Tracker</h1>
+       <div class="progress-card">
+           <p><strong>Semester Duration:</strong> {{ total_days }} days</p>
+           <p><strong>Days Completed:</strong> {{ elapsed_days }} days</p>
+           <p><strong>Days Remaining:</strong> {{ remaining_days }} days</p>
+           <p><strong>Progress:</strong> {{ "%.1f"|format(progress_percent) }}%</p>
+           
+           <div class="progress-bar">
+               <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
+           </div>
+           
+           <p class="motivation">{{ motivation }}</p>
+       </div>
+   {% endblock %}
+
+**templates/time_formats.html:**
+
+.. code-block:: html
+
+   {% extends "base.html" %}
+
+   {% block title %}DateTime Formats{% endblock %}
+
+   {% block content %}
+       <h1>🕒 DateTime Format Examples</h1>
+       <p>Current server time displayed in various formats:</p>
+       
+       {% for name, value in formats.items() %}
+           <div class="format-card">
+               <span class="format-name">{{ name }}:</span>
+               <span class="format-value">{{ value }}</span>
+           </div>
+       {% endfor %}
+   {% endblock %}
+
+**static/datetime_style.css:**
+
+.. code-block:: css
+
+   body {
+       font-family: Arial, sans-serif;
+       margin: 0;
+       padding: 20px;
+       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       min-height: 100vh;
+       color: white;
+   }
+
+   .container {
+       max-width: 800px;
+       margin: 0 auto;
+       text-align: center;
+   }
+
+   .time-card, .greeting-card, .age-card, .progress-card {
+       background: rgba(255,255,255,0.1);
+       padding: 30px;
+       border-radius: 15px;
+       margin: 20px 0;
+       backdrop-filter: blur(10px);
+   }
+
+   .format-card {
+       background: rgba(255,255,255,0.1);
+       padding: 15px;
+       margin: 10px 0;
+       border-radius: 8px;
+       display: flex;
+       justify-content: space-between;
+   }
+
+   .format-name {
+       font-weight: bold;
+   }
+
+   .format-value {
+       font-family: monospace;
+       opacity: 0.8;
+   }
+
+   .progress-bar {
+       background: rgba(255,255,255,0.2);
+       width: 100%;
+       height: 20px;
+       border-radius: 10px;
+       margin: 20px 0;
+       overflow: hidden;
+   }
+
+   .progress-fill {
+       background: linear-gradient(90deg, #4CAF50, #8BC34A);
+       height: 100%;
+       border-radius: 10px;
+       transition: width 0.3s ease;
+   }
+
+   .motivation {
+       font-size: 18px;
+       font-weight: bold;
+       margin-top: 15px;
+   }
 
 **Common DateTime Use Cases in Web Apps:**
 
@@ -991,35 +1345,38 @@ Flask applications often need to work with dates and times - for timestamps, sch
 Tasks
 -----
 
-**Task 1: Personal Portfolio Website**
+.. note::
+   **Important! 🎯** For all tasks below, use **proper template separation**! Create ``templates/`` and ``static/`` folders. No inline HTML strings in Python code! Follow the examples above. 💯
 
-Create a Flask app with routes: ``/`` (home with intro), ``/projects`` (list of projects with emojis), ``/skills`` (programming skills with progress bars in HTML), ``/contact`` (contact info). Use colorful HTML/CSS styling with gradients and emojis. Make each page visually distinct! 🎨
+**Task 1: Personal Portfolio Website (Using Templates!)**
 
-*Hint:* Create separate routes for each page. Use inline CSS or create a ``static/style.css`` file. Add emojis liberally! Return HTML strings with ``<style>`` tags.
+Create a Flask app with routes: ``/`` (home with intro), ``/projects`` (list of projects with emojis), ``/skills`` (programming skills with progress bars), ``/contact`` (contact info). Use proper template structure with base template, individual pages, and external CSS file. Make each page visually distinct! 🎨
 
-**Task 2: Mood Tracker Web App**
+*Hint:* Create ``templates/base.html``, ``templates/home.html``, etc. Use ``static/style.css`` for all styling. Use ``render_template()`` in all routes. Template inheritance is your friend!
 
-Create a Flask app that tracks your mood. Route ``/`` shows a form to select mood (😊 Happy, 😐 Neutral, 😢 Sad) and a note. Route ``/mood/<mood_type>`` displays an encouraging message based on mood. Store data in a Python list (no database needed). Show mood history on homepage.
+**Task 2: Mood Tracker Web App (Templated!)**
 
-*Hint:* Use a global list to store moods: ``moods = []``. Access form data with ``request.form.get()``. Use ``methods=['GET', 'POST']`` for form route.
+Create a Flask app that tracks your mood. Route ``/`` shows a form template to select mood (😊 Happy, 😐 Neutral, 😢 Sad) and a note. Route ``/mood/<mood_type>`` displays an encouraging message using templates. Store data in a Python list (no database needed). Show mood history on homepage template.
 
-**Task 3: Random Advice Generator**
+*Hint:* Use ``templates/mood_form.html``, ``templates/mood_display.html``. Store moods: ``moods = []``. Use ``request.form.get()`` and ``render_template()``. Pass data to templates as parameters.
 
-Build a "College Survival Advice" web app with categories: Academic 📚, Social 🎉, Mental Health 🧘, Career 💼. Route ``/`` shows category buttons. Route ``/advice/<category>`` displays random advice from a predefined dictionary. Add a "Crisis Help" section with ``/crisis/<type>`` that redirects to counseling resources.
+**Task 3: Random Advice Generator (Template Structure!)**
 
-*Hint:* Store advice in a dictionary of lists. Use ``import random`` and ``random.choice(list)``. Create styled HTML responses with emergency colors for crisis routes.
+Build a "College Survival Advice" web app with categories: Academic 📚, Social 🎉, Mental Health 🧘, Career 💼. Route ``/`` shows category buttons using a template. Route ``/advice/<category>`` displays random advice using templates. Add a "Crisis Help" section using styled templates.
 
-**Task 4: Study Session Timer Page**
+*Hint:* Create ``templates/home.html``, ``templates/advice.html``, ``templates/crisis.html``. Store advice in dictionaries. Use ``import random`` and ``random.choice()``. Style with external CSS.
 
-Create a Pomodoro-style timer app. Route ``/`` explains the technique with emojis. Route ``/timer/<int:minutes>`` displays a motivational message based on duration (25 min = 🍅 Pomodoro, 5 min = ☕ Break, etc.). Add routes ``/start``, ``/break``, ``/finish`` with appropriate encouragement messages!
+**Task 4: Study Session Timer Page (Professional Templates!)**
 
-*Hint:* No actual timer needed - just display messages! Use URL parameters for duration. Style each route differently with CSS gradients. Add encouraging emojis and messages.
+Create a Pomodoro-style timer app. Route ``/`` explains the technique using a template with emojis. Route ``/timer/<int:minutes>`` displays motivational messages using templates based on duration (25 min = 🍅 Pomodoro, 5 min = ☕ Break, etc.). Add routes ``/start``, ``/break``, ``/finish`` with templated encouragement messages!
 
-**Task 5: Simple Blog Platform**
+*Hint:* Create multiple templates for different timer states. No actual timer needed - just display messages using templates! Style each template differently with CSS classes.
 
-Create a mini-blog with: ``/`` (homepage listing post titles), ``/post/<int:id>`` (display post content), ``/about`` (about the blog). Store 5 sample posts in a list of dictionaries with keys: id, title, content, date, emoji. Make it colorful with CSS! 🌈
+**Task 5: Simple Blog Platform (Full Template Structure!)**
 
-*Hint:* Posts list: ``[{'id': 1, 'title': '...', 'content': '...', 'emoji': '🎉'}]``. Loop through posts on homepage. Use ``id`` to find specific post in ``/post/<int:id>`` route.
+Create a mini-blog with: ``/`` (homepage listing post titles), ``/post/<int:id>`` (display post content), ``/about`` (about the blog). Store 5 sample posts in a list of dictionaries. Use proper template inheritance with base template, post list template, individual post template, and external CSS! 🌈
+
+*Hint:* Posts structure: ``[{'id': 1, 'title': '...', 'content': '...', 'emoji': '🎉'}]``. Create ``templates/base.html``, ``templates/post_list.html``, ``templates/post_detail.html``. Use Jinja2 loops and conditionals.
 
 --------------
 
