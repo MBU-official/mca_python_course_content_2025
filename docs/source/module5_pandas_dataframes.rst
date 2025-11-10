@@ -553,6 +553,258 @@ Create a DataFrame with Week (1-18), Study_Hours, Assignment_Completion (%), Mot
 
 --------------
 
+Time-Series Analysis with Pandas
+---------------------------------
+
+Time-series analysis involves working with data indexed by time. Pandas provides powerful tools for handling dates, times, and time-indexed data.
+
+**Creating Datetime Data**
+
+.. code-block:: python
+
+   import pandas as pd
+   import numpy as np
+   from datetime import datetime, timedelta
+
+   # Creating date ranges
+   dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
+   print(f"Created {len(dates)} daily dates")
+
+   # Different frequency options
+   weekly_dates = pd.date_range(start='2024-01-01', periods=52, freq='W')
+   monthly_dates = pd.date_range(start='2024-01-01', periods=12, freq='M')
+   hourly_dates = pd.date_range(start='2024-01-01', periods=24, freq='H')
+
+   print(f"Weekly dates: {len(weekly_dates)}")
+   print(f"Monthly dates: {len(monthly_dates)}")
+   print(f"Hourly dates: {len(hourly_dates)}")
+
+**Basic Time-Series DataFrame**
+
+.. code-block:: python
+
+   import pandas as pd
+   import numpy as np
+
+   # Create sample sales data for a year
+   dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
+   np.random.seed(42)
+
+   # Simulate seasonal sales pattern
+   days_of_year = np.arange(1, len(dates) + 1)
+   seasonal_pattern = 100 + 50 * np.sin(2 * np.pi * days_of_year / 365)
+   noise = np.random.normal(0, 20, len(dates))
+   sales = seasonal_pattern + noise
+
+   # Create time-series DataFrame
+   df = pd.DataFrame({
+       'date': dates,
+       'sales': sales,
+       'day_of_week': dates.day_name(),
+       'month': dates.month_name(),
+       'quarter': dates.quarter
+   })
+
+   # Set date as index
+   df.set_index('date', inplace=True)
+
+   print(df.head())
+   print(f"\nDataFrame shape: {df.shape}")
+   print(f"Date range: {df.index.min()} to {df.index.max()}")
+
+**Time-Based Indexing and Slicing**
+
+.. code-block:: python
+
+   # Access specific dates
+   print("Sales on 2024-01-15:")
+   print(df.loc['2024-01-15'])
+
+   # Access date ranges
+   print("\nJanuary 2024 sales:")
+   january_data = df.loc['2024-01']
+   print(january_data.head())
+
+   # Access specific months
+   print("\nQ1 2024 (Jan-Mar):")
+   q1_data = df.loc['2024-01':'2024-03']
+   print(f"Q1 average sales: {q1_data['sales'].mean():.2f}")
+
+   # Access by day of week
+   print("\nMonday sales:")
+   monday_sales = df[df['day_of_week'] == 'Monday']
+   print(f"Average Monday sales: {monday_sales['sales'].mean():.2f}")
+
+**Time-Series Resampling**
+
+.. code-block:: python
+
+   # Resample daily data to monthly
+   monthly_sales = df['sales'].resample('M').agg({
+       'mean': 'mean',
+       'sum': 'sum',
+       'count': 'count',
+       'std': 'std'
+   })
+
+   print("Monthly Sales Summary:")
+   print(monthly_sales.head())
+
+   # Resample to weekly data
+   weekly_sales = df['sales'].resample('W').agg(['mean', 'sum', 'max', 'min'])
+   print("\nWeekly Sales Summary:")
+   print(weekly_sales.head())
+
+   # Custom resampling with multiple columns
+   quarterly_summary = df.resample('Q').agg({
+       'sales': ['mean', 'sum', 'std'],
+       'day_of_week': lambda x: x.mode()[0] if len(x.mode()) > 0 else 'Unknown'
+   })
+   print("\nQuarterly Summary:")
+   print(quarterly_summary)
+
+**Rolling Window Analysis**
+
+.. code-block:: python
+
+   # Calculate moving averages
+   df['sales_ma_7'] = df['sales'].rolling(window=7).mean()    # 7-day moving average
+   df['sales_ma_30'] = df['sales'].rolling(window=30).mean()  # 30-day moving average
+
+   # Calculate rolling statistics
+   df['sales_rolling_std'] = df['sales'].rolling(window=30).std()
+   df['sales_rolling_max'] = df['sales'].rolling(window=7).max()
+   df['sales_rolling_min'] = df['sales'].rolling(window=7).min()
+
+   print("Sales with Moving Averages:")
+   print(df[['sales', 'sales_ma_7', 'sales_ma_30']].head(10))
+
+   # Identify trends
+   df['trend_signal'] = np.where(df['sales'] > df['sales_ma_30'], 'Above Average', 'Below Average')
+   print(f"\nDays above 30-day average: {(df['trend_signal'] == 'Above Average').sum()}")
+
+**Real-World Example: Website Traffic Analysis**
+
+.. code-block:: python
+
+   import pandas as pd
+   import numpy as np
+
+   # Create website traffic data
+   dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
+   np.random.seed(123)
+
+   # Simulate realistic web traffic patterns
+   base_traffic = 1000
+   weekend_boost = np.where(pd.Series(dates).dt.dayofweek >= 5, 200, 0)
+   seasonal_effect = 300 * np.sin(2 * np.pi * np.arange(len(dates)) / 365)
+   random_noise = np.random.normal(0, 100, len(dates))
+
+   traffic_data = pd.DataFrame({
+       'date': dates,
+       'page_views': base_traffic + weekend_boost + seasonal_effect + random_noise,
+       'unique_visitors': (base_traffic + weekend_boost + seasonal_effect + random_noise) * 0.3,
+       'bounce_rate': np.random.uniform(0.2, 0.8, len(dates))
+   })
+
+   traffic_data.set_index('date', inplace=True)
+
+   print("=== Website Traffic Analysis ===")
+   print(traffic_data.head())
+
+   # Add time-based features
+   traffic_data['day_of_week'] = traffic_data.index.day_name()
+   traffic_data['month'] = traffic_data.index.month_name()
+   traffic_data['is_weekend'] = traffic_data.index.dayofweek >= 5
+
+   # Daily analysis
+   print(f"\nDaily Statistics:")
+   print(f"Average daily page views: {traffic_data['page_views'].mean():.0f}")
+   print(f"Peak day page views: {traffic_data['page_views'].max():.0f}")
+   print(f"Lowest day page views: {traffic_data['page_views'].min():.0f}")
+
+   # Weekly analysis
+   weekly_stats = traffic_data.groupby('day_of_week').agg({
+       'page_views': 'mean',
+       'unique_visitors': 'mean',
+       'bounce_rate': 'mean'
+   }).round(2)
+
+   print("\nDay of Week Analysis:")
+   print(weekly_stats)
+
+   # Monthly trends
+   monthly_traffic = traffic_data.resample('M').agg({
+       'page_views': 'sum',
+       'unique_visitors': 'sum',
+       'bounce_rate': 'mean'
+   })
+
+   print("\nMonthly Traffic Summary:")
+   print(monthly_traffic.head())
+
+   # Seasonal analysis
+   seasonal_analysis = traffic_data.groupby(traffic_data.index.month).agg({
+       'page_views': 'mean',
+       'bounce_rate': 'mean'
+   }).round(2)
+
+   print("\nSeasonal Patterns (by month):")
+   print(seasonal_analysis)
+
+   # Growth analysis
+   monthly_traffic['page_views_growth'] = monthly_traffic['page_views'].pct_change() * 100
+   print("\nMonth-over-Month Growth:")
+   print(monthly_traffic[['page_views', 'page_views_growth']].head(6))
+
+**Advanced Time-Series Features**
+
+.. code-block:: python
+
+   # Lag features (previous period values)
+   traffic_data['page_views_lag1'] = traffic_data['page_views'].shift(1)  # Previous day
+   traffic_data['page_views_lag7'] = traffic_data['page_views'].shift(7)  # Same day last week
+
+   # Forward looking features
+   traffic_data['page_views_lead1'] = traffic_data['page_views'].shift(-1)  # Next day
+
+   # Calculate differences
+   traffic_data['daily_change'] = traffic_data['page_views'].diff()
+   traffic_data['weekly_change'] = traffic_data['page_views'] - traffic_data['page_views_lag7']
+
+   # Percent changes
+   traffic_data['daily_pct_change'] = traffic_data['page_views'].pct_change() * 100
+
+   print("Advanced Time-Series Features:")
+   print(traffic_data[['page_views', 'page_views_lag1', 'daily_change', 'daily_pct_change']].head(10))
+
+   # Time-based filtering
+   peak_days = traffic_data[traffic_data['page_views'] > traffic_data['page_views'].quantile(0.9)]
+   print(f"\nTop 10% traffic days: {len(peak_days)} days")
+   print(f"Average page views on peak days: {peak_days['page_views'].mean():.0f}")
+
+**Common Time-Series Use Cases:**
+
+✅ **Business Applications:**
+- Sales forecasting and trend analysis
+- Website traffic monitoring
+- Financial data analysis
+- Inventory management
+- Customer behavior tracking
+
+✅ **Key Pandas Time-Series Functions:**
+- ``pd.date_range()``: Create date sequences
+- ``df.resample()``: Aggregate data by time periods
+- ``df.rolling()``: Calculate moving window statistics
+- ``df.shift()``: Create lag/lead features
+- ``df.diff()``: Calculate differences between periods
+- ``df.pct_change()``: Calculate percentage changes
+
+.. note::
+   **Time-series analysis** is crucial for understanding patterns, trends, and seasonality in data over time. Pandas makes it easy to work with dates and perform temporal analysis! 📈⏰
+
+--------------
+
 Summary
 -------
 

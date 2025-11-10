@@ -914,6 +914,285 @@ Show feedback messages after actions:
 
 --------------
 
+File Upload and Download in Flask
+----------------------------------
+
+Flask can handle file uploads and serve files back to users. This is useful for document management, image uploads, PDF serving, and more.
+
+**Basic File Upload Setup**
+
+.. code-block:: python
+
+   import os
+   from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+   from werkzeug.utils import secure_filename
+
+   app = Flask(__name__)
+   app.secret_key = 'your-secret-key-here'
+
+   # Configuration for file uploads
+   UPLOAD_FOLDER = 'uploads'
+   ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx'}
+   MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB max file size
+
+   app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+   app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+   # Create uploads directory if it doesn't exist
+   os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+   # File validation function
+   def allowed_file(filename):
+       return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+   # Store uploaded files info
+   uploaded_files = []
+
+**File Upload Routes**
+
+.. code-block:: python
+
+   @app.route('/')
+   def home():
+       return render_template('file_manager.html', files=uploaded_files)
+
+   @app.route('/upload', methods=['GET', 'POST'])
+   def upload_file():
+       if request.method == 'POST':
+           # Check if file is in the request
+           if 'file' not in request.files:
+               flash('No file selected! 📁', 'error')
+               return redirect(request.url)
+           
+           file = request.files['file']
+           
+           # Check if filename is empty
+           if file.filename == '':
+               flash('No file selected! 📁', 'error')
+               return redirect(request.url)
+           
+           # Validate and save file
+           if file and allowed_file(file.filename):
+               # Secure the filename to prevent security issues
+               filename = secure_filename(file.filename)
+               
+               # Add timestamp to prevent name conflicts
+               import time
+               timestamp = str(int(time.time()))
+               name, ext = os.path.splitext(filename)
+               unique_filename = f"{name}_{timestamp}{ext}"
+               
+               # Save file
+               file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+               file.save(file_path)
+               
+               # Store file info
+               file_info = {
+                   'id': len(uploaded_files) + 1,
+                   'original_name': file.filename,
+                   'stored_name': unique_filename,
+                   'file_path': file_path,
+                   'size': os.path.getsize(file_path),
+                   'upload_time': time.strftime('%Y-%m-%d %H:%M:%S')
+               }
+               uploaded_files.append(file_info)
+               
+               flash(f'File "{file.filename}" uploaded successfully! ✅', 'success')
+               return redirect(url_for('home'))
+           else:
+               flash('Invalid file type! Only txt, pdf, png, jpg, jpeg, gif, doc, docx allowed 🚫', 'error')
+       
+       return render_template('upload_form.html')
+
+   @app.route('/download/<int:file_id>')
+   def download_file(file_id):
+       # Find file by ID
+       file_info = next((f for f in uploaded_files if f['id'] == file_id), None)
+       
+       if file_info and os.path.exists(file_info['file_path']):
+           return send_file(
+               file_info['file_path'],
+               as_attachment=True,
+               download_name=file_info['original_name']
+           )
+       else:
+           flash('File not found! 📁❌', 'error')
+           return redirect(url_for('home'))
+
+   @app.route('/view_pdf/<int:file_id>')
+   def view_pdf(file_id):
+       """View PDF file in browser instead of downloading"""
+       file_info = next((f for f in uploaded_files if f['id'] == file_id), None)
+       
+       if file_info and os.path.exists(file_info['file_path']):
+           # Check if it's a PDF file
+           if file_info['original_name'].lower().endswith('.pdf'):
+               return send_file(
+                   file_info['file_path'],
+                   mimetype='application/pdf'
+               )
+           else:
+               flash('This feature is only for PDF files! 📄', 'error')
+               return redirect(url_for('home'))
+       else:
+           flash('File not found! 📁❌', 'error')
+           return redirect(url_for('home'))
+
+   @app.route('/delete/<int:file_id>', methods=['POST'])
+   def delete_file(file_id):
+       global uploaded_files
+       
+       # Find and remove file
+       file_info = next((f for f in uploaded_files if f['id'] == file_id), None)
+       
+       if file_info:
+           # Delete physical file
+           if os.path.exists(file_info['file_path']):
+               os.remove(file_info['file_path'])
+           
+           # Remove from list
+           uploaded_files = [f for f in uploaded_files if f['id'] != file_id]
+           flash(f'File "{file_info["original_name"]}" deleted! 🗑️', 'success')
+       else:
+           flash('File not found! 📁❌', 'error')
+       
+       return redirect(url_for('home'))
+
+**Complete File Manager Template Example**
+
+.. code-block:: html
+
+   <!-- templates/file_manager.html -->
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>📁 File Manager</title>
+       <style>
+           body {
+               font-family: Arial, sans-serif;
+               max-width: 1000px;
+               margin: 50px auto;
+               padding: 20px;
+               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+               min-height: 100vh;
+           }
+           .container {
+               background: white;
+               padding: 30px;
+               border-radius: 15px;
+               box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+           }
+           h1 { text-align: center; color: #667eea; margin-bottom: 30px; }
+           .upload-btn {
+               display: block;
+               width: 200px;
+               margin: 20px auto;
+               padding: 15px;
+               background: #28a745;
+               color: white;
+               text-align: center;
+               text-decoration: none;
+               border-radius: 8px;
+               font-weight: bold;
+           }
+           .upload-btn:hover { background: #218838; }
+           .file-table {
+               width: 100%;
+               border-collapse: collapse;
+               margin-top: 30px;
+           }
+           .file-table th, .file-table td {
+               padding: 12px;
+               border: 1px solid #ddd;
+               text-align: left;
+           }
+           .file-table th {
+               background: #667eea;
+               color: white;
+           }
+           .file-table tr:nth-child(even) {
+               background: #f9f9f9;
+           }
+           .btn {
+               padding: 8px 12px;
+               margin: 2px;
+               border: none;
+               border-radius: 4px;
+               cursor: pointer;
+               text-decoration: none;
+               color: white;
+               font-size: 12px;
+           }
+           .btn-download { background: #17a2b8; }
+           .btn-view { background: #28a745; }
+           .btn-delete { background: #dc3545; }
+       </style>
+   </head>
+   <body>
+       <div class="container">
+           <h1>📁 File Manager Dashboard</h1>
+           
+           <a href="{{ url_for('upload_file') }}" class="upload-btn">📤 Upload New File</a>
+           
+           {% if files %}
+               <table class="file-table">
+                   <thead>
+                       <tr>
+                           <th>📄 File Name</th>
+                           <th>📏 Size</th>
+                           <th>⏰ Upload Time</th>
+                           <th>🔧 Actions</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       {% for file in files %}
+                           <tr>
+                               <td>{{ file.original_name }}</td>
+                               <td>{{ "%.2f"|format(file.size / 1024) }} KB</td>
+                               <td>{{ file.upload_time }}</td>
+                               <td>
+                                   <a href="{{ url_for('download_file', file_id=file.id) }}" 
+                                      class="btn btn-download">📥 Download</a>
+                                   {% if file.original_name.lower().endswith('.pdf') %}
+                                       <a href="{{ url_for('view_pdf', file_id=file.id) }}" 
+                                          class="btn btn-view" target="_blank">👁️ View PDF</a>
+                                   {% endif %}
+                                   <form style="display:inline;" method="POST" 
+                                         action="{{ url_for('delete_file', file_id=file.id) }}"
+                                         onsubmit="return confirm('Are you sure?')">
+                                       <button type="submit" class="btn btn-delete">🗑️ Delete</button>
+                                   </form>
+                               </td>
+                           </tr>
+                       {% endfor %}
+                   </tbody>
+               </table>
+           {% else %}
+               <div style="text-align: center; padding: 50px; color: #666;">
+                   <h3>📂 No files uploaded yet</h3>
+                   <p>Upload your first file to get started!</p>
+               </div>
+           {% endif %}
+       </div>
+   </body>
+   </html>
+
+**Security Best Practices:**
+
+✅ **Important Security Measures:**
+- Use ``secure_filename()`` to sanitize filenames
+- Validate file extensions with allowlist
+- Set maximum file size limits
+- Store files outside web-accessible directories
+- Add timestamp to prevent filename conflicts
+- Never execute uploaded files directly
+- Validate file content, not just extension
+
+.. note::
+   **File uploads** are powerful but require security considerations. Always validate, sanitize, and store files safely! Perfect for document management systems, image galleries, and PDF viewers! 📁🔒
+
+--------------
+
 Tasks
 -----
 

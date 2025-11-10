@@ -109,6 +109,115 @@ You can provide default values for constructor parameters.
 
 --------------
 
+Constructor Overloading in Python
+----------------------------------
+
+Unlike languages like Java or C++, Python doesn't support traditional method overloading (multiple methods with the same name but different parameters). However, we can simulate constructor overloading using default arguments and flexible parameter handling.
+
+**Method 1: Using Default Arguments**
+
+.. code-block:: python
+
+   class Employee:
+       def __init__(self, name, emp_id=None, salary=0, department="General"):
+           self.name = name
+           self.emp_id = emp_id or f"EMP{hash(name) % 10000:04d}"
+           self.salary = salary
+           self.department = department
+       
+       def display(self):
+           return f"Employee: {self.name} (ID: {self.emp_id}), Salary: ₹{self.salary}, Dept: {self.department}"
+
+   # Different ways to create Employee objects (simulating overloading)
+   emp1 = Employee("Alice")  # Only name
+   emp2 = Employee("Bob", "EMP001")  # Name and ID
+   emp3 = Employee("Charlie", "EMP002", 50000)  # Name, ID, and salary
+   emp4 = Employee("Diana", "EMP003", 60000, "IT")  # All parameters
+
+   print(emp1.display())
+   print(emp2.display())
+   print(emp3.display())
+   print(emp4.display())
+
+**Method 2: Using *args and **kwargs**
+
+.. code-block:: python
+
+   class Product:
+       def __init__(self, *args, **kwargs):
+           if len(args) == 1:
+               # Single argument: assume it's name
+               self.name = args[0]
+               self.price = 0
+               self.category = "General"
+           elif len(args) == 2:
+               # Two arguments: name and price
+               self.name, self.price = args
+               self.category = "General"
+           elif len(args) == 3:
+               # Three arguments: name, price, and category
+               self.name, self.price, self.category = args
+           else:
+               # Use keyword arguments
+               self.name = kwargs.get('name', 'Unknown')
+               self.price = kwargs.get('price', 0)
+               self.category = kwargs.get('category', 'General')
+       
+       def display(self):
+           return f"Product: {self.name}, Price: ₹{self.price}, Category: {self.category}"
+
+   # Different constructor calls
+   product1 = Product("Laptop")
+   product2 = Product("Mouse", 500)
+   product3 = Product("Keyboard", 1500, "Electronics")
+   product4 = Product(name="Monitor", price=15000, category="Electronics")
+
+   for product in [product1, product2, product3, product4]:
+       print(product.display())
+
+**Method 3: Using Class Methods as Alternative Constructors**
+
+.. code-block:: python
+
+   class Student:
+       def __init__(self, name, roll_no, grade):
+           self.name = name
+           self.roll_no = roll_no
+           self.grade = grade
+       
+       @classmethod
+       def from_string(cls, student_string):
+           """Alternative constructor from comma-separated string"""
+           name, roll_no, grade = student_string.split(',')
+           return cls(name.strip(), roll_no.strip(), float(grade.strip()))
+       
+       @classmethod
+       def from_dict(cls, student_dict):
+           """Alternative constructor from dictionary"""
+           return cls(student_dict['name'], student_dict['roll_no'], student_dict['grade'])
+       
+       @classmethod
+       def default_student(cls, name):
+           """Alternative constructor with default values"""
+           return cls(name, "TEMP001", 0.0)
+       
+       def display(self):
+           return f"Student: {self.name}, Roll: {self.roll_no}, Grade: {self.grade}"
+
+   # Using different "constructors"
+   student1 = Student("Alice", "MCA001", 85.5)  # Regular constructor
+   student2 = Student.from_string("Bob, MCA002, 78.0")  # From string
+   student3 = Student.from_dict({'name': 'Charlie', 'roll_no': 'MCA003', 'grade': 92.0})  # From dict
+   student4 = Student.default_student("Diana")  # Default student
+
+   for student in [student1, student2, student3, student4]:
+       print(student.display())
+
+.. note::
+   **Constructor overloading** in Python is achieved through default arguments, flexible parameter handling, or class methods. This provides multiple ways to create objects while maintaining a single ``__init__`` method or using alternative constructors.
+
+--------------
+
 Real-World Example: Bank Account
 ---------------------------------
 
